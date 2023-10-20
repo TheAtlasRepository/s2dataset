@@ -17,23 +17,31 @@ T = TypeVar("T")
 
 class S2Tile:
     """A Sentinel 2 tile."""
-    def __init__(self, name: str, geometry: Polygon, transform: Affine, crs: CRS) -> None:
+    def __init__(self, name: str, geometry: Polygon, crs: CRS, offset: tuple[int, int]) -> None:
         self.name = name
         self.geometry = geometry
-        self.transform = transform
         self.crs = crs
+        self.offset = offset
 
     def __str__(self) -> str:
         return self.name
 
     @classmethod
     def from_feature(cls, feature: dict[str, Any]) -> 'S2Tile':
+        """Create a tile from a feature in the tiling grid."""
         return cls(
             name=feature["properties"]["name"],
             geometry=shape(feature["geometry"]),
-            transform=Affine.from_gdal(*map(int, feature["properties"]["transform"].split(","))),
-            crs=CRS.from_epsg(feature["properties"]["epsg"])
+            crs=CRS.from_epsg(feature["properties"]["epsg"]),
+            offset=(
+                feature["properties"]["xoff"],
+                feature["properties"]["yoff"]
+            )
         )
+    
+    def transform(self, resolution: int) -> Affine:
+        """Return the affine transformation matrix for this tile."""
+        return Affine.translation(*self.offset) * Affine.scale(resolution, -resolution)
 
 
 class S2TileIndex:
