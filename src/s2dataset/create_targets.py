@@ -1,4 +1,4 @@
-from .utils import window_to_filename, polygon_iterator
+from .common import window_to_filename, polygon_iterator
 from datetime import datetime
 from pathlib import Path
 from s2utils import S2Tile, S2TileIndex, S2Catalog, chip_tile, rasterize_tile
@@ -12,7 +12,7 @@ import rasterio
 
 
 @click.command()
-@click.argument("data_dir", type=str)
+@click.argument("root_dir", type=str)
 @click.argument("labels", type=str)
 @click.option("--name", "-n", type=str, help="Name of the class. Defaults to the name of the label file.")
 @click.option("--start-date", "-b", type=str, help="Start date of the search.")
@@ -21,7 +21,7 @@ import rasterio
 @click.option("--stride", "-t", type=int, default=224, help="Stride of the sliding window.")
 @click.option("--workers", "-w", type=int, default=1, help="Number of workers to use.")
 def create_targets(
-    data_dir: str,
+    root_dir: str,
     labels: str,
     name: str | None,
     start_date: datetime | str | None,
@@ -32,13 +32,13 @@ def create_targets(
 ) -> None:
     """Create targets for the dataset.
     
-    DATA_DIR is the path to the root directory of the dataset. LABELS is the path
+    ROOT_DIR is the path to the root directory of the dataset. LABELS is the path
     to the file containing the labels.
     """
     if name is None:
         name = Path(labels.removesuffix("".join(Path(labels).suffixes))).name
 
-    target_dir = Path(data_dir) / "targets" / name
+    target_dir = Path(root_dir) / "targets" / name
     target_dir.mkdir(parents=True, exist_ok=True)
     
     with cf.ProcessPoolExecutor(workers, initializer=init_worker) as pool:
