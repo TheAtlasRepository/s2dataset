@@ -7,6 +7,7 @@ readme = "README.md"
 
 packages = [
     { include = "s2utils", from = "src" },
+    { include = "s2dataset", from = "src" },
 ]
 
 [tool.poetry.dependencies]
