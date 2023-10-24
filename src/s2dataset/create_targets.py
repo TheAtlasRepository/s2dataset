@@ -1,3 +1,4 @@
+from .utils import window_to_filename, polygon_iterator
 from datetime import datetime
 from pathlib import Path
 from s2utils import S2Tile, S2TileIndex, S2Catalog, chip_tile, rasterize_tile
@@ -89,7 +90,7 @@ def create_tile_targets(
     ):
         for window in windows:
             with rasterio.open(
-                target_dir / f"{product.name}_{size}_{window.col_off}_{window.row_off}.tif", "w",
+                target_dir / window_to_filename(product.name, window), "w",
                 driver="GTiff",
                 width=window.width,
                 height=window.height,
@@ -106,19 +107,6 @@ def read_labels(path: str) -> Iterator[Any]:
     with fiona.open(path) as colxn:
         for feature in tqdm(colxn, "Reading features"):
             yield from polygon_iterator(feature.geometry)
-
-
-def polygon_iterator(geometry: fiona.Geometry) -> Iterator[fiona.Geometry]:
-    if geometry.type == "Polygon":
-        yield geometry
-    elif geometry.type == "MultiPolygon":
-        for polygon in geometry.coordinates: # type: ignore
-            yield fiona.Geometry(
-                type="Polygon",
-                coordinates=polygon)
-    elif geometry.type == "GeometryCollection":
-        for geometry in geometry.geometries: # type: ignore
-            yield from polygon_iterator(geometry)
 
 
 if __name__ == "__main__":

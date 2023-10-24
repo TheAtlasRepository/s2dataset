@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "solis"
+name = "s2dataset"
 version = "0.1.0"
 description = ""
 authors = ["Mikkel Stårvik <mikkel.starvik@gmail.com>"]
@@ -7,7 +7,7 @@ readme = "README.md"
 
 packages = [
     { include = "s2utils", from = "src" },
-    { include = "s2dataset", from = "src" },
+    { include = "s2dataset", from = "src" }
 ]
 
 [tool.poetry.dependencies]

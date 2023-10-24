@@ -1,3 +1,4 @@
+from .utils import window_to_filename, filename_to_window
 from pathlib import Path
 from s2utils import S2Catalog
 from tqdm import tqdm
@@ -51,7 +52,7 @@ def create_product_positives(
             data = src.read(window=window)
         
         with rasterio.open(
-            image_dir / f"{product.name}_{window.width}_{window.col_off}_{window.row_off}.tif", "w",
+            image_dir / window_to_filename(product_name, window), "w",
             driver="GTiff",
             width=window.width,
             height=window.height,
@@ -82,16 +83,6 @@ def missing_positives(
         missing.setdefault(product_name, []).append(window)
 
     return missing
-
-
-def filename_to_window(filename: str) -> tuple[str, rasterio.windows.Window]:
-    fields = filename.split("_")
-    window = rasterio.windows.Window(
-        int(fields[-2]), # type: ignore
-        int(fields[-1]),
-        int(fields[-3]),
-        int(fields[-3]))
-    return "_".join(fields[:-3]), window
 
 
 if __name__ == "__main__":
