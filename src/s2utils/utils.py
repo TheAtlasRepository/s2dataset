@@ -8,9 +8,9 @@ import rasterio.windows
 
 
 def chip_tile(
-    resolution: int,
     size: int,
-    stride: int
+    stride: int,
+    resolution: int = 10
 ) -> Iterator[rasterio.windows.Window]:
     """Return an iterator over windows of a Sentinel 2 tile.
 
@@ -27,8 +27,8 @@ def chip_tile(
 
 def rasterize_tile(
     tile: S2Tile,
-    resolution: int,
-    geometries: Any
+    geometries: Any,
+    resolution: int = 10
 ) -> Any:
     """Return an image array with input geometries burned in.
 

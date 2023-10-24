@@ -16,10 +16,7 @@ class S2Catalog:
             "cloudcover": "properties.eo:cloud_cover"
         }
 
-    def get(
-        self,
-        name: str
-    ):
+    def __getitem__(self, name: str):
         results = self._catalog.search(
             collections=["sentinel-2-l2a"],
             max_items=1,
@@ -31,7 +28,7 @@ class S2Catalog:
         for item in results.items():
             return S2Product.from_item(item)
 
-        raise Exception(f"Product {name} not found.")
+        raise KeyError(f"Product {name} not found.")
 
     def search(
         self,

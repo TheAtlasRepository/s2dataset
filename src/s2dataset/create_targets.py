@@ -18,7 +18,6 @@ import rasterio
 @click.option("--end-date", "-e", type=str, help="End date of the search.")
 @click.option("--size", "-s", type=int, default=224, help="Size of the images.")
 @click.option("--stride", "-t", type=int, default=224, help="Stride of the sliding window.")
-@click.option("--resolution", "-r", type=int, default=10, help="Resolution of the images.")
 @click.option("--workers", "-w", type=int, default=1, help="Number of workers to use.")
 def create_targets(
     data_dir: str,
@@ -28,7 +27,6 @@ def create_targets(
     end_date: datetime | str | None,
     size: int,
     stride: int,
-    resolution: int,
     workers: int
 ) -> None:
     """Create targets for the dataset.
@@ -42,12 +40,12 @@ def create_targets(
     target_dir = Path(data_dir) / "targets" / name
     target_dir.mkdir(parents=True, exist_ok=True)
     
-    with cf.ProcessPoolExecutor(workers, initializer=init_worker) as executor:
+    with cf.ProcessPoolExecutor(workers, initializer=init_worker) as pool:
         futures = []
         with S2TileIndex() as index:
             for tile, geometries in index.reverse_intersection(read_labels(labels)):
                 futures.append(
-                    executor.submit(
+                    pool.submit(
                         create_tile_targets,
                         target_dir,
                         tile,
@@ -55,8 +53,7 @@ def create_targets(
                         start_date,
                         end_date,
                         size,
-                        stride,
-                        resolution))
+                        stride))
 
         for _ in tqdm(cf.as_completed(futures), "Creating targets", len(futures)):
             pass
@@ -74,13 +71,12 @@ def create_tile_targets(
     start_date: datetime | str | None,
     end_date: datetime | str | None,
     size: int,
-    stride: int,
-    resolution: int
+    stride: int
 ) -> None:
-    target = rasterize_tile(tile, resolution, geometries)
+    target = rasterize_tile(tile, geometries)
 
     windows = []
-    for window in chip_tile(resolution, size, stride):
+    for window in chip_tile(size, stride):
         if target[window.toslices()].any():
             windows.append(window)
 
