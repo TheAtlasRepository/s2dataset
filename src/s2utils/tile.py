@@ -113,7 +113,7 @@ class S2TileIndex:
         for tile_id in self._intersection(geometry):
             yield self[tile_id]
 
-    def _reverse_intersection(self, geometries: Iterable[T]) -> dict[int, list[T]]:
+    def _join(self, geometries: Iterable[T]) -> dict[int, list[T]]:
         """Return id of tiles that intersect the given geometries.
         
         :param geometries: An iterable of objects that implement the geo
@@ -125,12 +125,12 @@ class S2TileIndex:
                 tiles.setdefault(tile_id, []).append(geometry)
         return tiles
 
-    def reverse_intersection(self, geometries: Iterable[T]) -> Iterator[tuple[S2Tile, list[T]]]:
+    def join(self, geometries: Iterable[T]) -> Iterator[tuple[S2Tile, list[T]]]:
         """Return tiles that intersect the given geometries.
         
         :param geometries: An iterable of objects that implement the geo
             interface. Geometries are assumed to be in EPSG:4326.
         """
-        tiles = self._reverse_intersection(geometries)
+        tiles = self._join(geometries)
         for tile_id, geometries in tiles.items():
             yield self[tile_id], geometries

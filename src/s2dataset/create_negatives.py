@@ -17,13 +17,11 @@ import rasterio.windows
 @click.argument("root_dir", type=str)
 @click.option("--size", "-s", type=int, default=224, help="Size of the images.")
 @click.option("--stride", "-t", type=int, default=224, help="Stride of the sliding window.")
-# @click.option("--mask", "-m", type=str, help="Path to the mask file.")
 @click.option("--workers", "-w", type=int, default=1, help="Number of workers to use.")
 def create_negatives(
     root_dir: str,
     size: int,
     stride: int,
-    # mask: str | None,
     workers: int
 ) -> None:
     """Create negative samples for the dataset.
@@ -36,19 +34,17 @@ def create_negatives(
     image_dir = Path(root_dir) / "images"
     image_dir.mkdir(parents=True, exist_ok=True)
 
-    # if mask is not None:
-    #     mask = MultiPolygon([shape(poly) for poly in read_mask(mask)])
-
     with cf.ProcessPoolExecutor(workers, initializer=init_worker) as pool:
         futures = []
         for product_name, targets in product_targets(target_dir).items():
-            futures.append(pool.submit(
-                create_product_negatives,
-                image_dir,
-                product_name,
-                size,
-                stride,
-                targets))
+            futures.append(
+                pool.submit(
+                    create_product_negatives,
+                    image_dir,
+                    product_name,
+                    size,
+                    stride,
+                    targets))
         
         for _ in tqdm(cf.as_completed(futures), "Creating negatives", len(futures)):
             pass
@@ -99,7 +95,7 @@ def product_targets(
     target_dir: Path
 ) -> dict[str, set[rasterio.windows.Window]]:
     targets = {}
-    for target in target_dir.glob("*/*.tif"):
+    for target in target_dir.glob("*.tif"):
         product_name, window = filename_to_window(target.stem)
         targets.setdefault(product_name, set()).add(window)
     return targets

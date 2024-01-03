@@ -74,13 +74,8 @@ def missing_positives(
     image_dir: Path,
     target_dir: Path
 ) -> dict[str, set[rasterio.windows.Window]]:
-    targets = set()
-    for target in target_dir.glob("*/*.tif"):
-        targets.add(target.stem)
-    
-    images = set()
-    for image in image_dir.glob("*.tif"):
-        images.add(image.stem)
+    targets = {target.stem for target in target_dir.glob("*.tif")}
+    images = {image.stem for image in image_dir.glob("*.tif")}
     
     missing = {}
     for filename in targets - images:

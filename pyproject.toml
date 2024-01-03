@@ -1,7 +1,8 @@
 [tool.poetry]
 name = "s2dataset"
 version = "0.1.0"
-description = ""
+description = "Create machine learning datasets from Sentinel-2 data."
+license = "MIT"
 authors = ["Mikkel Stårvik <mikkel.starvik@gmail.com>"]
 readme = "README.md"
 

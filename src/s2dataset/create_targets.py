@@ -8,13 +8,13 @@ from typing import Any, Iterator, Sequence
 import click
 import concurrent.futures as cf
 import fiona
+import fiona.crs
 import rasterio
 
 
 @click.command()
 @click.argument("root_dir", type=str)
-@click.argument("labels", type=str)
-@click.option("--name", "-n", type=str, help="Name of the class. Defaults to the name of the label file.")
+@click.argument("features", type=str)
 @click.option("--start-date", "-b", type=str, help="Start date of the search.")
 @click.option("--end-date", "-e", type=str, help="End date of the search.")
 @click.option("--size", "-s", type=int, default=224, help="Size of the images.")
@@ -22,8 +22,7 @@ import rasterio
 @click.option("--workers", "-w", type=int, default=1, help="Number of workers to use.")
 def create_targets(
     root_dir: str,
-    labels: str,
-    name: str | None,
+    features: str,
     start_date: datetime | str | None,
     end_date: datetime | str | None,
     size: int,
@@ -32,19 +31,16 @@ def create_targets(
 ) -> None:
     """Create targets for the dataset.
     
-    ROOT_DIR is the path to the root directory of the dataset. LABELS is the path
-    to the file containing the labels.
+    ROOT_DIR is the path to the root directory of the dataset. FEATURES is the path
+    to the file containing the features.
     """
-    if name is None:
-        name = Path(labels.removesuffix("".join(Path(labels).suffixes))).name
-
-    target_dir = Path(root_dir) / "targets" / name
+    target_dir = Path(root_dir) / "targets"
     target_dir.mkdir(parents=True, exist_ok=True)
-    
+
     with cf.ProcessPoolExecutor(workers, initializer=init_worker) as pool:
         futures = []
         with S2TileIndex() as index:
-            for tile, geometries in index.reverse_intersection(read_labels(labels)):
+            for tile, geometries in index.join(read_features(features)):
                 futures.append(
                     pool.submit(
                         create_tile_targets,
@@ -103,8 +99,10 @@ def create_tile_targets(
                 dst.write(target[window.toslices()], 1)
 
 
-def read_labels(path: str) -> Iterator[Any]:
+def read_features(path: str) -> Iterator[Any]:
     with fiona.open(path) as colxn:
+        if colxn.crs and colxn.crs != fiona.crs.from_epsg(4326):
+            raise ValueError("The featrues must be in EPSG:4326.")
         for feature in tqdm(colxn, "Reading features"):
             yield from polygon_iterator(feature.geometry)
 
