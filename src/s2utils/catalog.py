@@ -2,7 +2,7 @@ from .tile import S2Tile
 from .product import S2Product
 from datetime import datetime
 from pystac_client import Client
-from typing import Iterator
+from typing import Iterator, Optional, Union
 
 
 class S2Catalog:
@@ -32,10 +32,10 @@ class S2Catalog:
 
     def search(
         self,
-        tile: S2Tile | str,
-        max_items: int | None = None,
-        start_date: datetime | str | None = None,
-        end_date: datetime | str | None = None,
+        tile: Union[S2Tile, str],
+        max_items: Optional[int] = None,
+        start_date: Optional[Union[datetime, str]] = None,
+        end_date: Optional[Union[datetime, str]] = None,
         max_cloud_cover: int = 10,
         max_nodata: int = 10,
         sort_key: str = "datetime",

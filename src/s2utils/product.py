@@ -1,6 +1,6 @@
 from affine import Affine
 from pyproj import CRS
-from typing import Any
+from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
 import rasterio
@@ -18,9 +18,9 @@ class S2Product:
     def __init__(
         self,
         name: str,
-        uris: list[str],
+        uris: List[str],
         crs: CRS,
-        offset: tuple[int, int]
+        offset: Tuple[int, int]
     ) -> None:
         """Create a new product.
 
@@ -76,7 +76,7 @@ class S2Product:
         for dataset in self.datasets:
             dataset.close()
 
-    def _read(self, index: int, window: rasterio.windows.Window | None = None) -> Any:
+    def _read(self, index: int, window: Optional[rasterio.windows.Window] = None) -> Any:
         width = self.width
         height = self.height
 
@@ -97,7 +97,7 @@ class S2Product:
             window=window,
             boundless=True)
     
-    def read(self, indexes: int | list[int] | None = None, window: rasterio.windows.Window | None = None) -> Any:
+    def read(self, indexes: Optional[Union[int, List[int]]] = None, window: Optional[rasterio.windows.Window] = None) -> Any:
         if indexes is None:
             indexes = list(range(1, self.count + 1))
 

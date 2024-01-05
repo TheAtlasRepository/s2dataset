@@ -3,7 +3,7 @@ from datetime import datetime
 from pathlib import Path
 from s2utils import S2Tile, S2TileIndex, S2Catalog, chip_tile, rasterize_tile
 from tqdm import tqdm
-from typing import Any, Iterator, Sequence
+from typing import Any, Iterator, Union, Sequence
 
 import click
 import concurrent.futures as cf
@@ -23,8 +23,8 @@ import rasterio
 def create_targets(
     root_dir: str,
     features: str,
-    start_date: datetime | str | None,
-    end_date: datetime | str | None,
+    start_date: Union[datetime, str, None],
+    end_date: Union[datetime, str, None],
     size: int,
     stride: int,
     workers: int
@@ -65,8 +65,8 @@ def create_tile_targets(
     target_dir: Path,
     tile: S2Tile,
     geometries: Sequence[Any],
-    start_date: datetime | str | None,
-    end_date: datetime | str | None,
+    start_date: Union[datetime, str, None],
+    end_date: Union[datetime, str, None],
     size: int,
     stride: int
 ) -> None:

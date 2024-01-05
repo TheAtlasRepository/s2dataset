@@ -1,8 +1,6 @@
 from .common import window_to_filename, filename_to_window, polygon_iterator
 from pathlib import Path
 from s2utils import S2Catalog, chip_tile
-# from shapely import MultiPolygon
-# from shapely.geometry import shape
 from tqdm import tqdm
 
 import click
