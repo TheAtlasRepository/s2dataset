@@ -42,6 +42,21 @@ class S2Product:
         self.height = 10980
         self.count = len(self.uris)
 
+        self.colorinterp = (
+            ColorInterp.coastal,
+            ColorInterp.blue,
+            ColorInterp.green,
+            ColorInterp.red,
+            ColorInterp.rededge,
+            ColorInterp.rededge,
+            ColorInterp.rededge,
+            ColorInterp.nir,
+            ColorInterp.nir,
+            ColorInterp.nir,
+            ColorInterp.swir,
+            ColorInterp.swir
+        )
+
     def __enter__(self) -> 'S2Product':
         self.open()
         return self
