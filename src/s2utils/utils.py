@@ -1,10 +1,9 @@
-from .tile import S2Tile
-from typing import Any, Iterator
-
 import rasterio
 import rasterio.features
 import rasterio.warp
 import rasterio.windows
+from .tile import S2Tile
+from typing import Any, Iterator
 
 
 def chip_tile(

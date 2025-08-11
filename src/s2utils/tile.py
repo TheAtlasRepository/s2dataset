@@ -1,12 +1,11 @@
+import fiona
+import zstandard as zstd
 from affine import Affine
 from importlib import resources
 from pyproj import CRS
 from shapely import Geometry, Polygon
 from shapely.geometry import shape
 from typing import Any, Iterable, Iterator, TypeVar
-
-import fiona
-import zstandard as zstd
 
 
 tiles_path = str(resources.files("s2utils").joinpath("resources/s2_tiling_grid.fgb.zst"))

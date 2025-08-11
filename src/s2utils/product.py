@@ -1,11 +1,10 @@
+import numpy as np
+import rasterio
+import rasterio.windows
 from affine import Affine
 from pyproj import CRS
 from rasterio.enums import ColorInterp
 from typing import Any, List, Optional, Tuple, Union
-
-import numpy as np
-import rasterio
-import rasterio.windows
 
 
 class S2Product:

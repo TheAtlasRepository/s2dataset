@@ -1,13 +1,12 @@
+import click
+import concurrent.futures as cf
+import rasterio
+import rasterio.windows
 from .common import window_to_filename, filename_to_window
 from pathlib import Path
 from s2utils import S2Catalog
 from tqdm import tqdm
 from typing import Iterable
-
-import click
-import concurrent.futures as cf
-import rasterio
-import rasterio.windows
 
 
 @click.command()

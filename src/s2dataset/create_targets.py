@@ -1,15 +1,14 @@
+import click
+import concurrent.futures as cf
+import fiona
+import fiona.crs
+import rasterio
 from .common import window_to_filename, polygon_iterator
 from datetime import datetime
 from pathlib import Path
 from s2utils import S2Tile, S2TileIndex, S2Catalog, chip_tile, rasterize_tile
 from tqdm import tqdm
 from typing import Any, Iterator, Union, Sequence
-
-import click
-import concurrent.futures as cf
-import fiona
-import fiona.crs
-import rasterio
 
 
 @click.command()

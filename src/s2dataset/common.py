@@ -1,8 +1,7 @@
-from typing import Iterator
-
 import fiona
 import rasterio
 import rasterio.windows
+from typing import Iterator
 
 
 def polygon_iterator(geometry: fiona.Geometry) -> Iterator[fiona.Geometry]:
