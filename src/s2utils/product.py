@@ -1,5 +1,6 @@
 from affine import Affine
 from pyproj import CRS
+from rasterio.enums import ColorInterp
 from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
@@ -55,10 +56,17 @@ class S2Product:
         for asset in ["coastal", "blue", "green", "red", "rededge1", "rededge2", "rededge3", "nir", "nir08", "nir09", "swir16", "swir22"]:
             uris.append(item.assets[asset].href)
 
+        if "proj:code" in item.properties: # New standard
+            crs = CRS.from_string(item.properties["proj:code"])
+        elif "proj:epsg" in item.properties: # Old standard, may be deprecated
+            crs = CRS.from_epsg(item.properties["proj:epsg"])
+        else:
+            raise ValueError("Item does not contain a valid CRS.")
+
         return cls(
             name=item.properties["s2:product_uri"].removesuffix(".SAFE"),
             uris=uris,
-            crs=CRS.from_epsg(item.properties["proj:epsg"]),
+            crs=crs,
             offset=(
                 item.assets["blue"].extra_fields["proj:transform"][2],
                 item.assets["blue"].extra_fields["proj:transform"][5]
